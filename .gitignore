@@ -6,9 +6,6 @@
 # .csvは無視
 *.csv
 
-# data層のファイルは無視
-data/
-
 # __pycache__は無視
 __pycache__/
 
