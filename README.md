@@ -1,4 +1,12 @@
 
+# githubからクローンする方法
+
+以下をコマンドラインで実行してください。
+
+```bash
+git clone https://github.com/ryomappi/Term3-Science.git
+```
+
 # ラマンスペクトルの生成
 
 # 手順
