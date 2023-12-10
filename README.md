@@ -28,3 +28,7 @@ python raman.py
 (あるいは、GUI上でrunする)
 
 すると、`spectrun_1.png`と`spectrum_1.csv`が生成されます。
+
+# 備考
+
+もし動かなかったら、raman_spectrum.ipynbの方を使ってください。
