@@ -54,6 +54,12 @@ python raman.py <image_path> <spectrum_output_path> <denoised_output_path>
 
 * ごめん、今は引数2つ目までしか使えない。
 
+例えば、
+
+```bash
+python raman.py IMG_001.png IMG_001_spectrum
+```
+
 (あるいは、GUI上でrunする)
 
 ## 引数の説明
