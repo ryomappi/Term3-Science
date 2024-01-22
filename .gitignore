@@ -2,6 +2,7 @@
 *.png
 *.jpeg
 *.jpg
+*.bmp
 
 # .csvは無視
 *.csv
@@ -9,3 +10,5 @@
 # __pycache__は無視
 __pycache__/
 
+# .pdfも無視
+*.pdf

@@ -11,7 +11,7 @@ import csv
 
 class RamanSpectrum:
     def __init__(self, img_path):
-        self.img_path = f"data/img/{img_path}"
+        self.img_path = f'data/img/{img_path}'
         self.paramAsLS = [10**3.5, 0.00005]  # paramAsLS = [ lam , p ]
         self.paramSG = [80, 5]  # paramSG = [ dn , poly ]
 
