@@ -11,16 +11,14 @@ git clone https://github.com/ryomappi/Term3-Science.git
 
 ```bash
 raman
-├──src
-│  ├──raman.py
-│  ├──RamanSpectrum_repository.py
-│  └──MyException.py
+├──raman.py
+├──RamanSpectrum_repository.py
+├──RamanSpectrum.py
+├──raman_spectrum.ipynb
+├──baseline_and_smoothing.py
 ├──data
 │  ├──img
 │  └──csv
-├──usecase
-│  ├──raman_spectrum.ipynb
-│  └──baseline_and_smoothing.py
 ├──README.md
 └──.gitignore
 ```
@@ -53,6 +51,8 @@ import sys
 ```bash
 python raman.py <image_path> <spectrum_output_path> <denoised_output_path>
 ```
+
+* ごめん、今は引数2つ目までしか使えない。
 
 (あるいは、GUI上でrunする)
 

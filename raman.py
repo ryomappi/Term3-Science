@@ -1,6 +1,7 @@
 import sys
 from RamanSpectrum_repository import RamanSpectrum
 from pathlib import Path
+import os
 
 
 def run(img_path, spectrum_output_path) -> None:
