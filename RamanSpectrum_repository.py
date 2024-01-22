@@ -1,11 +1,12 @@
 import matplotlib.pyplot as plt
 import pandas as pd
 import cv2
+from pathlib import Path
 
 
 class RamanSpectrum:
     def __init__(self, img_path):
-        self.img_path = img_path
+        self.img_path = f'data/img/{img_path}'
 
     def read_img(self):
         return cv2.imread(self.img_path, cv2.IMREAD_GRAYSCALE)
