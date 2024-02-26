@@ -127,3 +127,14 @@ class RamanSpectrum:
         plt.legend()
         plt.axis("tight")
         plt.show()
+
+    def substruct_two_spectrum(self, file_name1, file_name2):  # substruct two spectrum
+        X1, Y1 = self.open_csv(file_name1)
+        X2, Y2 = self.open_csv(file_name2)
+        Y1_np = np.array(Y1)
+        Y2_np = np.array(Y2)
+        Y_substruct = Y1_np - Y2_np
+        dataOutput = np.c_[X1, Y_substruct]
+        np.savetxt(f"data/csv/{file_name1}_{file_name2}.csv", dataOutput, delimiter=",")
+        plt.plot(X1, Y_substruct)
+        plt.show()
