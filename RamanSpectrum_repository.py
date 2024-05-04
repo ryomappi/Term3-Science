@@ -28,7 +28,8 @@ class RamanSpectrumProcessor:
 
     def pixel_to_wavenumber(self, pixel):
         # kaiserの式のマジックナンバーたちは、設計に基づいた数値であることに注意
-        kaiser = 1.87970 * 10**4 - 10**7 / (532 + (633 - 532) / 1440 * pixel)
+        # kaiser = 1.87970 * 10**4 - 10**7 / (532 + (633 - 532) / 1440 * pixel)
+        kaiser = 5000 * pixel / 1440
         return kaiser
 
     def get_raman_intensity(self):
@@ -73,6 +74,21 @@ class RamanSpectrumProcessor:
         print("Successfully saved the csv file.")
         self.csv_file = file_name
 
+    def bitchange(self, file_name):
+        X, Y = self.open_csv(f"data/csv/{file_name}")
+        Y_np = np.array(Y)
+        Y_np = Y_np - Y_np.min()
+        Y_np = Y_np / Y_np.max()
+        Y_np = Y_np * 255
+        Y_np = Y_np.astype(np.uint16)
+        img = cv2.imread(f"data/img/{file_name.split('.')[0]}.png", cv2.IMREAD_UNCHANGED)
+        height, width = img.shape[:2]
+        for x in range(width):
+            for y in range(height):
+                img[y, x] = Y_np[x]
+        cv2.imwrite(f"data/img/{file_name.split('.')[0]}_bitchange.png", img)
+        print("Successfully saved the bitchanged image.")
+
     def open_csv(self, file_name):
         X = []
         Y = []
@@ -112,7 +128,7 @@ class RamanSpectrumProcessor:
         return SGsmoothed
 
     def outFigCSV(self):  # baseline estimation and smoothing
-        X, Y = self.open_csv(self.csv_file)
+        X, Y = self.open_csv(f"data/csv/{self.csv_file}")
         paramAsLS = self.paramAsLS
         paramSG = self.paramSG
         Y_np = np.array(Y)
@@ -124,7 +140,7 @@ class RamanSpectrumProcessor:
 
         # csv output
         dataOutput = np.c_[X, Y, bkg, smth]
-        np.savetxt(f"data/csv/{self.csv_file.split('.')}_processed.csv", dataOutput, delimiter=",")
+        np.savetxt(f"data/csv/{self.csv_file.split('.')[0]}_processed.csv", dataOutput, delimiter=",")
 
         # figures
         plt.figure(figsize=(12, 9))
@@ -136,10 +152,11 @@ class RamanSpectrumProcessor:
 
         ax2.plot(X, fix, "g", linewidth=1, linestyle="dashed", label="remove baseline")
         ax2.plot(X, smth, "b", linewidth=2, label="smoothed")
+        ax2.set_ylim(0, 30)
 
         plt.legend()
         plt.axis("tight")
-        plt.savefig(f"data/img/{self.csv_file.split('.')}_processed_graph.png")
+        plt.savefig(f"data/img/{self.csv_file.split('.')[0]}_processed_graph.png")
 
     def substruct_two_spectrum(self, file_name1, file_name2):  # substruct two spectrum
         X1, Y1 = self.open_csv(file_name1)
