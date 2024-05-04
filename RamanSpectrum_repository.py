@@ -9,14 +9,22 @@ from scipy import signal
 import csv
 
 
-class RamanSpectrum:
-    def __init__(self, img_path):
-        self.img_path = f'data/img/{img_path}'
+class RamanSpectrumProcessor:
+    def __init__(self):
+        self.image = None
+        self.csv_file = None
         self.paramAsLS = [10**3.5, 0.00005]  # paramAsLS = [ lam , p ]
         self.paramSG = [80, 5]  # paramSG = [ dn , poly ]
 
-    def read_img(self):
-        return cv2.imread(self.img_path, cv2.IMREAD_GRAYSCALE)
+    def read_img(self, img_name):
+        self.image = cv2.imread(f"data/img/{img_name}", cv2.IMREAD_UNCHANGED)
+        # 画像の読み込みに失敗した場合
+        if self.image is None:
+            print("Failed to read the image.")
+            exit(1)
+        else:
+            print("Successfully read the image.")
+        return self.image
 
     def pixel_to_wavenumber(self, pixel):
         # kaiserの式のマジックナンバーたちは、設計に基づいた数値であることに注意
@@ -24,41 +32,46 @@ class RamanSpectrum:
         return kaiser
 
     def get_raman_intensity(self):
-        img = self.read_img()
+        img = self.image
         height, width = img.shape[:2]
         raman_intensity = []
         for x in range(width):
             sum_intensity = 0
+            # 垂直方向の画素の合計を計算
             for y in range(height):
                 intensity_of_pixel = img[y, x]
                 sum_intensity += intensity_of_pixel
+            # 画素の合計を高さで割って平均を求める
             raman_intensity.append(sum_intensity / height)
         return raman_intensity
 
     def get_raman_wavenumber(self):
-        img = self.read_img()
+        img = self.image
         height, width = img.shape[:2]
         raman_wavenumber = []
         for x in range(width):
             raman_wavenumber.append(self.pixel_to_wavenumber(x))
         return raman_wavenumber
 
-    def get_spectrum(self, file_name):
+    def get_spectrum_graph(self, file_name):
         raman_intensity = self.get_raman_intensity()
         raman_wavenumber = self.get_raman_wavenumber()
         plt.xlabel("Wavenumber (cm-1)")
         plt.ylabel("Raman Intensity")
         plt.plot(raman_wavenumber, raman_intensity)
-        plt.savefig(f"data/img/{file_name}.png")
+        plt.savefig(f"data/img/{file_name}")
+        print("Successfully saved the graph.")
 
-    def save_spectrum(self, file_name):
+    def get_spectrum_csv(self, file_name):
         df = pd.DataFrame(
             {
                 "Wavenumber": self.get_raman_wavenumber(),
                 "Intensity": self.get_raman_intensity(),
             }
         )
-        df.to_csv(f"data/csv/{file_name}.csv")
+        df.to_csv(f"data/csv/{file_name}")
+        print("Successfully saved the csv file.")
+        self.csv_file = file_name
 
     def open_csv(self, file_name):
         X = []
@@ -98,8 +111,8 @@ class RamanSpectrum:
         SGsmoothed = signal.savgol_filter(y, window_length=N, polyorder=poly)
         return SGsmoothed
 
-    def outFigCSV(self, file_name):  # baseline estimation and smoothing
-        X, Y = self.open_csv(file_name)
+    def outFigCSV(self):  # baseline estimation and smoothing
+        X, Y = self.open_csv(self.csv_file)
         paramAsLS = self.paramAsLS
         paramSG = self.paramSG
         Y_np = np.array(Y)
@@ -111,7 +124,7 @@ class RamanSpectrum:
 
         # csv output
         dataOutput = np.c_[X, Y, bkg, smth]
-        np.savetxt(f"data/csv/{file_name}.csv", dataOutput, delimiter=",")
+        np.savetxt(f"data/csv/{self.csv_file.split('.')}_processed.csv", dataOutput, delimiter=",")
 
         # figures
         plt.figure(figsize=(12, 9))
@@ -126,7 +139,7 @@ class RamanSpectrum:
 
         plt.legend()
         plt.axis("tight")
-        plt.show()
+        plt.savefig(f"data/img/{self.csv_file.split('.')}_processed_graph.png")
 
     def substruct_two_spectrum(self, file_name1, file_name2):  # substruct two spectrum
         X1, Y1 = self.open_csv(file_name1)
